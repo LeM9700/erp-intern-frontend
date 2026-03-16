@@ -90,6 +90,11 @@ class TaskRepository {
     return TaskCommentModel.fromJson(response.data as Map<String, dynamic>);
   }
 
+  /// Admin: delete a task
+  Future<void> deleteTask(String taskId) async {
+    await _dio.delete(ApiConstants.taskDelete(taskId));
+  }
+
   /// Delete a comment
   Future<void> deleteComment(String commentId) async {
     await _dio.delete(ApiConstants.taskCommentDelete(commentId));

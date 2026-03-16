@@ -73,14 +73,22 @@ class TasksScreen extends ConsumerWidget {
   }
 }
 
-class _InternTaskCard extends ConsumerWidget {
+class _InternTaskCard extends ConsumerStatefulWidget {
   final TaskModel task;
 
   const _InternTaskCard({required this.task});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_InternTaskCard> createState() => _InternTaskCardState();
+}
+
+class _InternTaskCardState extends ConsumerState<_InternTaskCard> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final task = widget.task;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -110,9 +118,20 @@ class _InternTaskCard extends ConsumerWidget {
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                maxLines: _expanded ? null : 2,
+                overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
               ),
+              if (task.description!.length > 100)
+                GestureDetector(
+                  onTap: () => setState(() => _expanded = !_expanded),
+                  child: Text(
+                    _expanded ? 'Voir moins' : 'Voir plus',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
             ],
 
             const SizedBox(height: 12),
@@ -181,7 +200,7 @@ class _InternTaskCard extends ConsumerWidget {
       builder: (ctx) => _SubmitProofDialog(
         onSubmit: (note, proofFile, proofUrl) {
           ref.read(taskActionsProvider.notifier).submitTask(
-            task.id,
+            widget.task.id,
             note: note,
             proofFile: proofFile,
             proofUrl: proofUrl,
