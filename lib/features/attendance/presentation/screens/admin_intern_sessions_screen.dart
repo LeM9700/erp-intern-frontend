@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:erp_frontend/core/router/app_router.dart';
 import 'package:erp_frontend/features/attendance/domain/models/attendance_model.dart';
 import 'package:erp_frontend/features/attendance/presentation/providers/attendance_provider.dart';
@@ -145,12 +144,11 @@ class _SessionCard extends StatelessWidget {
   }
 
   String _formatDate(DateTime dt) {
-    final formatter = DateFormat('EEE. d MMMM yyyy', 'fr_FR');
-    return _capitalize(formatter.format(dt));
+    const days = ['Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.', 'Dim.'];
+    const months = ['', 'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+        'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+    return '${days[dt.weekday - 1]} ${dt.day} ${months[dt.month]} ${dt.year}';
   }
-
-  String _capitalize(String s) =>
-      s.isNotEmpty ? '${s[0].toUpperCase()}${s.substring(1)}' : s;
 
   String _formatTime(DateTime dt) =>
       '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
