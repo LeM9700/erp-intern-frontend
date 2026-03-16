@@ -10,6 +10,8 @@ import 'package:erp_frontend/features/tasks/presentation/screens/tasks_screen.da
 import 'package:erp_frontend/features/tasks/presentation/screens/admin_tasks_screen.dart';
 import 'package:erp_frontend/features/attendance/presentation/screens/attendance_screen.dart';
 import 'package:erp_frontend/features/attendance/presentation/screens/admin_attendance_screen.dart';
+import 'package:erp_frontend/features/attendance/presentation/screens/admin_intern_sessions_screen.dart';
+import 'package:erp_frontend/features/attendance/presentation/screens/admin_session_detail_screen.dart';
 import 'package:erp_frontend/features/profile/presentation/screens/profile_screen.dart';
 import 'package:erp_frontend/features/users/presentation/screens/admin_users_screen.dart';
 import 'package:erp_frontend/features/notifications/presentation/screens/notifications_screen.dart';
@@ -29,6 +31,14 @@ class AppRoutes {
   static const internAttendance = '/intern/attendance';
   static const internNotifications = '/intern/notifications';
   static const internProfile = '/intern/profile';
+
+  static const adminInternSessions = '/admin/attendance/sessions/:userId';
+  static String adminInternSessionsPath(String userId) =>
+      '/admin/attendance/sessions/$userId';
+  static const adminSessionDetail =
+      '/admin/attendance/sessions/:userId/:sessionId';
+  static String adminSessionDetailPath(String userId, String sessionId) =>
+      '/admin/attendance/sessions/$userId/$sessionId';
 }
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -108,6 +118,22 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
           ),
         ],
+      ),
+
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutes.adminInternSessions,
+        builder: (context, state) => AdminInternSessionsScreen(
+          userId: state.pathParameters['userId']!,
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutes.adminSessionDetail,
+        builder: (context, state) => AdminSessionDetailScreen(
+          userId: state.pathParameters['userId']!,
+          sessionId: state.pathParameters['sessionId']!,
+        ),
       ),
 
       // ── Intern Shell ──

@@ -6,6 +6,8 @@ import 'package:erp_frontend/core/constants/api_constants.dart';
 import 'package:erp_frontend/core/network/dio_client.dart';
 import 'package:erp_frontend/features/attendance/domain/models/attendance_model.dart';
 import 'package:erp_frontend/features/attendance/presentation/providers/attendance_provider.dart';
+import 'package:erp_frontend/core/router/app_router.dart';
+import 'package:go_router/go_router.dart';
 
 class AdminAttendanceScreen extends ConsumerWidget {
   const AdminAttendanceScreen({super.key});
@@ -143,6 +145,13 @@ class _AttendanceCard extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 8),
+            // Bouton historique
+            IconButton(
+              icon: const Icon(Icons.history),
+              tooltip: 'Voir l\'historique',
+              onPressed: () => context.push(
+                  AppRoutes.adminInternSessionsPath(session.userId)),
+            ),
             // Bouton photo
             IconButton(
               icon: const Icon(Icons.photo_camera_outlined),
@@ -185,7 +194,7 @@ class _AttendanceCard extends ConsumerWidget {
               ),
             ),
             const Divider(height: 1),
-            _PhotoViewer(
+            AttendancePhotoViewer(
               dio: dio,
               photoUrl:
                   '${ApiConstants.baseUrl}/files/${session.clockInPhotoId}/view',
@@ -202,17 +211,17 @@ class _AttendanceCard extends ConsumerWidget {
 }
 
 /// Fetches and displays a photo using Dio (handles auth token automatically).
-class _PhotoViewer extends StatefulWidget {
+class AttendancePhotoViewer extends StatefulWidget {
   final Dio dio;
   final String photoUrl;
 
-  const _PhotoViewer({required this.dio, required this.photoUrl});
+  const AttendancePhotoViewer({required this.dio, required this.photoUrl});
 
   @override
-  State<_PhotoViewer> createState() => _PhotoViewerState();
+  State<AttendancePhotoViewer> createState() => AttendancePhotoViewerState();
 }
 
-class _PhotoViewerState extends State<_PhotoViewer> {
+class AttendancePhotoViewerState extends State<AttendancePhotoViewer> {
   late Future<Uint8List> _future;
 
   @override

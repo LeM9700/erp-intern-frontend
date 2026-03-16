@@ -59,3 +59,17 @@ class AttendanceActionsNotifier
 
 final attendanceActionsProvider = NotifierProvider<AttendanceActionsNotifier,
     AsyncValue<AttendanceSessionModel?>>(AttendanceActionsNotifier.new);
+
+// ── Admin: intern session list ──
+final internSessionsProvider = FutureProvider.autoDispose
+    .family<AdminAttendanceSessionListModel, String>((ref, userId) {
+  return ref.read(attendanceRepositoryProvider).getInternSessions(userId);
+});
+
+// ── Admin: intern session detail ──
+final internSessionDetailProvider = FutureProvider.autoDispose
+    .family<AdminAttendanceSessionModel, (String, String)>((ref, args) {
+  return ref
+      .read(attendanceRepositoryProvider)
+      .getInternSessionDetail(args.$1, args.$2);
+});
