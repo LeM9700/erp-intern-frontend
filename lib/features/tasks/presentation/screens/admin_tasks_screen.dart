@@ -231,14 +231,22 @@ class _CreateTaskDialogState extends ConsumerState<_CreateTaskDialog> {
   }
 }
 
-class _AdminTaskCard extends ConsumerWidget {
+class _AdminTaskCard extends ConsumerStatefulWidget {
   final TaskModel task;
 
   const _AdminTaskCard({required this.task});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_AdminTaskCard> createState() => _AdminTaskCardState();
+}
+
+class _AdminTaskCardState extends ConsumerState<_AdminTaskCard> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final task = widget.task;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -266,9 +274,20 @@ class _AdminTaskCard extends ConsumerWidget {
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                maxLines: _expanded ? null : 2,
+                overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
               ),
+              if (task.description!.length > 100)
+                GestureDetector(
+                  onTap: () => setState(() => _expanded = !_expanded),
+                  child: Text(
+                    _expanded ? 'Voir moins' : 'Voir plus',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
             ],
             const SizedBox(height: 12),
             Row(
@@ -334,7 +353,37 @@ class _AdminTaskCard extends ConsumerWidget {
                     ),
                     child: const Text('Approuver'),
                   ),
+                  const SizedBox(width: 8),
                 ],
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  tooltip: 'Supprimer la tâche',
+                  onPressed: () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Supprimer la tâche'),
+                        content: const Text(
+                            'Cette action est irréversible. Confirmer la suppression ?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: const Text('Annuler'),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            style: FilledButton.styleFrom(
+                                backgroundColor: Colors.red),
+                            child: const Text('Supprimer'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed == true) {
+                      ref.read(taskActionsProvider.notifier).deleteTask(task.id);
+                    }
+                  },
+                ),
               ],
             ),
           ],
