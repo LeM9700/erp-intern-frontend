@@ -142,3 +142,83 @@ class AttendanceSummaryModel {
     );
   }
 }
+
+class AdminAttendanceSessionModel {
+  final String id;
+  final String userId;
+  final String userFullName;
+  final AttendanceStatus status;
+  final DateTime clockIn;
+  final DateTime? clockOut;
+  final double? durationMinutes;
+  final String? note;
+  final String clockInPhotoId;
+  final String? clockOutPhotoId;
+
+  const AdminAttendanceSessionModel({
+    required this.id,
+    required this.userId,
+    required this.userFullName,
+    required this.status,
+    required this.clockIn,
+    this.clockOut,
+    this.durationMinutes,
+    this.note,
+    required this.clockInPhotoId,
+    this.clockOutPhotoId,
+  });
+
+  String get durationLabel {
+    if (durationMinutes == null) return 'En cours';
+    final h = (durationMinutes! / 60).floor();
+    final m = (durationMinutes! % 60).round();
+    return h > 0 ? '${h}h${m.toString().padLeft(2, '0')}' : '${m}min';
+  }
+
+  factory AdminAttendanceSessionModel.fromJson(Map<String, dynamic> json) {
+    return AdminAttendanceSessionModel(
+      id: json['id'] as String,
+      userId: json['user_id'] as String,
+      userFullName: json['user_full_name'] as String,
+      status: AttendanceStatus.fromString(json['status'] as String),
+      clockIn: DateTime.parse(json['clock_in'] as String),
+      clockOut: json['clock_out'] != null
+          ? DateTime.parse(json['clock_out'] as String)
+          : null,
+      durationMinutes: json['duration_minutes'] != null
+          ? (json['duration_minutes'] as num).toDouble()
+          : null,
+      note: json['note'] as String?,
+      clockInPhotoId: json['clock_in_photo_id'] as String,
+      clockOutPhotoId: json['clock_out_photo_id'] as String?,
+    );
+  }
+}
+
+class AdminAttendanceSessionListModel {
+  final List<AdminAttendanceSessionModel> items;
+  final int total;
+  final int page;
+  final int size;
+  final int pages;
+
+  const AdminAttendanceSessionListModel({
+    required this.items,
+    required this.total,
+    required this.page,
+    required this.size,
+    required this.pages,
+  });
+
+  factory AdminAttendanceSessionListModel.fromJson(Map<String, dynamic> json) {
+    return AdminAttendanceSessionListModel(
+      items: (json['items'] as List<dynamic>)
+          .map((e) => AdminAttendanceSessionModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      total: json['total'] as int,
+      page: json['page'] as int,
+      size: json['size'] as int,
+      pages: json['pages'] as int,
+    );
+  }
+}

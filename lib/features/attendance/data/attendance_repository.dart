@@ -54,4 +54,34 @@ class AttendanceRepository {
     final response = await _dio.get(ApiConstants.attendanceSummaryUser(userId));
     return AttendanceSummaryModel.fromJson(response.data as Map<String, dynamic>);
   }
+
+  Future<AdminAttendanceSessionListModel> getInternSessions(
+    String userId, {
+    int page = 1,
+    int size = 20,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+  }) async {
+    final queryParams = <String, dynamic>{
+      'page': page,
+      'size': size,
+      if (dateFrom != null) 'date_from': dateFrom.toIso8601String(),
+      if (dateTo != null) 'date_to': dateTo.toIso8601String(),
+    };
+    final response = await _dio.get(
+      ApiConstants.adminInternSessions(userId),
+      queryParameters: queryParams,
+    );
+    return AdminAttendanceSessionListModel.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<AdminAttendanceSessionModel> getInternSessionDetail(
+    String userId,
+    String sessionId,
+  ) async {
+    final response = await _dio.get(
+      ApiConstants.adminInternSessionDetail(userId, sessionId),
+    );
+    return AdminAttendanceSessionModel.fromJson(response.data as Map<String, dynamic>);
+  }
 }

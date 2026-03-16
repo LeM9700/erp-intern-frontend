@@ -13,6 +13,10 @@ class ApiConstants {
   static const String adminLive = '/attendance/admin/live';
   static const String attendanceSummaryMe = '/attendance/summary/me';
   static String attendanceSummaryUser(String userId) => '/attendance/admin/summary/$userId';
+  static String adminInternSessions(String userId) =>
+      '/attendance/admin/sessions/$userId';
+  static String adminInternSessionDetail(String userId, String sessionId) =>
+      '/attendance/admin/sessions/$userId/$sessionId';
 
   // Tasks
   static const String tasks = '/tasks';
