@@ -306,6 +306,11 @@ class _AdminTaskCard extends ConsumerWidget {
                   icon: const Icon(Icons.chat_bubble_outline, size: 18),
                   label: const Text('Commentaires'),
                 ),
+                IconButton(
+                  tooltip: 'Supprimer la tâche',
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  onPressed: () => _confirmDelete(context, ref),
+                ),
                 const Spacer(),
                 if (task.status == TaskStatus.submitted) ...[
                   OutlinedButton(
@@ -341,6 +346,33 @@ class _AdminTaskCard extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _confirmDelete(BuildContext context, WidgetRef ref) {
+    showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Supprimer la tâche'),
+        content: Text(
+          'Voulez-vous vraiment supprimer « ${task.title} » ?\nCette action est irréversible.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Annuler'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Supprimer'),
+          ),
+        ],
+      ),
+    ).then((confirmed) {
+      if (confirmed == true) {
+        ref.read(taskActionsProvider.notifier).deleteTask(task.id);
+      }
+    });
   }
 
   Widget _buildStatusChip(TaskStatus status) {

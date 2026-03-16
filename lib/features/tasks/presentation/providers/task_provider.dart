@@ -90,6 +90,19 @@ class TaskActionsNotifier extends Notifier<AsyncValue<void>> {
       state = AsyncValue.error(e, st);
     }
   }
+
+  Future<void> deleteTask(String taskId) async {
+    state = const AsyncValue.loading();
+    try {
+      final repo = ref.read(taskRepositoryProvider);
+      await repo.deleteTask(taskId);
+      ref.invalidate(adminTasksProvider);
+      ref.invalidate(internTasksProvider);
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
 }
 
 final taskActionsProvider =

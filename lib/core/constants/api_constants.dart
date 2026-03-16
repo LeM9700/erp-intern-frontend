@@ -21,6 +21,7 @@ class ApiConstants {
   static String taskStart(String id) => '/tasks/$id/start';
   static String taskSubmit(String id) => '/tasks/$id/submit';
   static String taskUpdate(String id) => '/tasks/$id';
+  static String taskDelete(String id) => '/tasks/$id';
   static String taskComments(String id) => '/tasks/$id/comments';
   static String taskCommentDelete(String id) => '/tasks/comments/$id';
 
