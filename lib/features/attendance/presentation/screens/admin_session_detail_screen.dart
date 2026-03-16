@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:erp_frontend/core/constants/api_constants.dart';
 import 'package:erp_frontend/core/network/dio_client.dart';
 import 'package:erp_frontend/features/attendance/domain/models/attendance_model.dart';
@@ -267,9 +266,10 @@ class _SessionDetailBody extends ConsumerWidget {
   }
 
   String _formatDate(DateTime dt) {
-    final formatter = DateFormat('EEE. d MMMM yyyy', 'fr_FR');
-    final s = formatter.format(dt);
-    return s.isNotEmpty ? '${s[0].toUpperCase()}${s.substring(1)}' : s;
+    const days = ['Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.', 'Dim.'];
+    const months = ['', 'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+        'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+    return '${days[dt.weekday - 1]} ${dt.day} ${months[dt.month]} ${dt.year}';
   }
 
   String _formatTime(DateTime dt) =>
