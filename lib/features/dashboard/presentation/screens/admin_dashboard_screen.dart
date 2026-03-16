@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:erp_frontend/core/router/app_router.dart';
 import 'package:erp_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:erp_frontend/features/dashboard/presentation/providers/dashboard_provider.dart';
 import 'package:erp_frontend/features/dashboard/domain/models/dashboard_model.dart';
@@ -206,7 +208,11 @@ class _InternCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
-      child: Padding(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () =>
+            context.push(AppRoutes.adminInternSessionsPath(intern.userId)),
+        child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,6 +289,7 @@ class _InternCard extends StatelessWidget {
               ],
             ),
           ],
+        ),
         ),
       ),
     );
