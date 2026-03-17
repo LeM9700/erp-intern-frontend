@@ -139,22 +139,10 @@ final submissionsProvider =
       .getSubmissions(page: filter.page, size: 20, status: filter.status);
 });
 
-class TaskSubmissionsPageNotifier
-    extends AutoDisposeFamilyNotifier<int, String> {
-  @override
-  int build(String arg) => 1;
-
-  void setPage(int page) => state = page;
-}
-
-final taskSubmissionsPageProvider = NotifierProvider.autoDispose
-    .family<TaskSubmissionsPageNotifier, int, String>(
-        TaskSubmissionsPageNotifier.new);
-
 final taskSubmissionsProvider =
-    FutureProvider.autoDispose.family<TaskSubmissionPageModel, String>(
-        (ref, taskId) async {
-  final page = ref.watch(taskSubmissionsPageProvider(taskId));
+    FutureProvider.autoDispose.family<TaskSubmissionPageModel, (String, int)>(
+        (ref, args) async {
+  final (taskId, page) = args;
   return ref
       .read(taskRepositoryProvider)
       .getTaskSubmissions(taskId, page: page);

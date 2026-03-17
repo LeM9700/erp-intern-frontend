@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:erp_frontend/features/tasks/presentation/providers/task_provider.dart';
 import 'package:erp_frontend/features/tasks/presentation/screens/submissions_screen.dart';
 
-class TaskSubmissionsScreen extends ConsumerWidget {
+class TaskSubmissionsScreen extends ConsumerStatefulWidget {
   final String taskId;
   final String taskTitle;
 
@@ -14,18 +14,27 @@ class TaskSubmissionsScreen extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final submissionsAsync = ref.watch(taskSubmissionsProvider(taskId));
-    final currentPage = ref.watch(taskSubmissionsPageProvider(taskId));
+  ConsumerState<TaskSubmissionsScreen> createState() =>
+      _TaskSubmissionsScreenState();
+}
+
+class _TaskSubmissionsScreenState extends ConsumerState<TaskSubmissionsScreen> {
+  int _page = 1;
+
+  @override
+  Widget build(BuildContext context) {
+    final submissionsAsync =
+        ref.watch(taskSubmissionsProvider((widget.taskId, _page)));
     final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Soumissions — $taskTitle'),
+        title: Text('Soumissions — ${widget.taskTitle}'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () => ref.invalidate(taskSubmissionsProvider(taskId)),
+            onPressed: () => ref.invalidate(
+                taskSubmissionsProvider((widget.taskId, _page))),
           ),
         ],
       ),
@@ -66,18 +75,14 @@ class TaskSubmissionsScreen extends ConsumerWidget {
               ),
               if (page.pages > 1)
                 _TaskPaginationBar(
-                  currentPage: currentPage,
+                  currentPage: _page,
                   totalPages: page.pages,
                   total: page.total,
-                  onPrevious: currentPage > 1
-                      ? () => ref
-                          .read(taskSubmissionsPageProvider(taskId).notifier)
-                          .setPage(currentPage - 1)
+                  onPrevious: _page > 1
+                      ? () => setState(() => _page--)
                       : null,
-                  onNext: currentPage < page.pages
-                      ? () => ref
-                          .read(taskSubmissionsPageProvider(taskId).notifier)
-                          .setPage(currentPage + 1)
+                  onNext: _page < page.pages
+                      ? () => setState(() => _page++)
                       : null,
                 ),
             ],
