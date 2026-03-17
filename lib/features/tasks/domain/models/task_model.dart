@@ -113,6 +113,80 @@ class TaskCommentModel {
   }
 }
 
+class TaskSubmissionModel {
+  final String id;
+  final String taskId;
+  final String taskTitle;
+  final TaskStatus taskStatus;
+  final String? internId;
+  final String? internFullName;
+  final String note;
+  final String? fileId;
+  final String? proofUrl;
+  final DateTime? submittedAt;
+  final DateTime createdAt;
+
+  const TaskSubmissionModel({
+    required this.id,
+    required this.taskId,
+    required this.taskTitle,
+    required this.taskStatus,
+    this.internId,
+    this.internFullName,
+    required this.note,
+    this.fileId,
+    this.proofUrl,
+    this.submittedAt,
+    required this.createdAt,
+  });
+
+  factory TaskSubmissionModel.fromJson(Map<String, dynamic> json) {
+    return TaskSubmissionModel(
+      id: json['id'] as String,
+      taskId: json['task_id'] as String,
+      taskTitle: json['task_title'] as String,
+      taskStatus: TaskStatus.fromString(json['task_status'] as String),
+      internId: json['intern_id'] as String?,
+      internFullName: json['intern_full_name'] as String?,
+      note: json['note'] as String,
+      fileId: json['file_id'] as String?,
+      proofUrl: json['proof_url'] as String?,
+      submittedAt: json['submitted_at'] != null
+          ? DateTime.parse(json['submitted_at'] as String)
+          : null,
+      createdAt: DateTime.parse(json['created_at'] as String),
+    );
+  }
+}
+
+class TaskSubmissionPageModel {
+  final List<TaskSubmissionModel> items;
+  final int total;
+  final int page;
+  final int size;
+  final int pages;
+
+  const TaskSubmissionPageModel({
+    required this.items,
+    required this.total,
+    required this.page,
+    required this.size,
+    required this.pages,
+  });
+
+  factory TaskSubmissionPageModel.fromJson(Map<String, dynamic> json) {
+    return TaskSubmissionPageModel(
+      items: (json['items'] as List<dynamic>)
+          .map((e) => TaskSubmissionModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      total: json['total'] as int,
+      page: json['page'] as int,
+      size: json['size'] as int,
+      pages: json['pages'] as int,
+    );
+  }
+}
+
 class TaskModel {
   final String id;
   final String title;
