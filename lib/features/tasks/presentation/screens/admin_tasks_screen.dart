@@ -326,50 +326,42 @@ class _AdminTaskCardState extends ConsumerState<_AdminTaskCard> {
             const SizedBox(height: 4),
             Row(
               children: [
-                TextButton.icon(
+                IconButton(
+                  icon: const Icon(Icons.chat_bubble_outline),
+                  tooltip: 'Commentaires',
                   onPressed: () => showTaskCommentsSheet(
                       context, task.id, task.title),
-                  icon: const Icon(Icons.chat_bubble_outline, size: 18),
-                  label: const Text('Commentaires'),
                 ),
-                TextButton.icon(
+                IconButton(
+                  icon: const Icon(Icons.assignment_turned_in_outlined),
+                  tooltip: 'Soumissions',
                   onPressed: () => context.push(
                     AppRoutes.adminTaskSubmissionsPath(task.id),
                     extra: task.title,
                   ),
-                  icon: const Icon(Icons.assignment_turned_in_outlined,
-                      size: 18),
-                  label: const Text('Soumissions'),
                 ),
                 const Spacer(),
                 if (task.status == TaskStatus.submitted) ...[
-                  OutlinedButton(
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.red),
+                    tooltip: 'Rejeter',
                     onPressed: () {
                       ref.read(taskActionsProvider.notifier).updateTask(
                         task.id,
                         {'status': 'REJECTED'},
                       );
                     },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
-                    ),
-                    child: const Text('Rejeter'),
                   ),
-                  const SizedBox(width: 8),
-                  FilledButton(
+                  IconButton(
+                    icon: const Icon(Icons.check, color: Colors.green),
+                    tooltip: 'Approuver',
                     onPressed: () {
                       ref.read(taskActionsProvider.notifier).updateTask(
                         task.id,
                         {'status': 'APPROVED'},
                       );
                     },
-                    style: FilledButton.styleFrom(
-                      backgroundColor: Colors.green,
-                    ),
-                    child: const Text('Approuver'),
                   ),
-                  const SizedBox(width: 8),
                 ],
                 IconButton(
                   icon: const Icon(Icons.delete_outline, color: Colors.red),
