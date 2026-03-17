@@ -72,12 +72,12 @@ class TaskSubmissionsScreen extends ConsumerWidget {
                   onPrevious: currentPage > 1
                       ? () => ref
                           .read(taskSubmissionsPageProvider(taskId).notifier)
-                          .state = currentPage - 1
+                          .setPage(currentPage - 1)
                       : null,
                   onNext: currentPage < page.pages
                       ? () => ref
                           .read(taskSubmissionsPageProvider(taskId).notifier)
-                          .state = currentPage + 1
+                          .setPage(currentPage + 1)
                       : null,
                 ),
             ],

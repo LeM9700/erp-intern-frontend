@@ -11,8 +11,9 @@ class SubmissionsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final submissionsAsync = ref.watch(submissionsProvider);
-    final currentPage = ref.watch(submissionsPageProvider);
-    final currentStatus = ref.watch(submissionsStatusFilterProvider);
+    final filter = ref.watch(submissionsFilterProvider);
+    final currentPage = filter.page;
+    final currentStatus = filter.status;
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -30,8 +31,7 @@ class SubmissionsScreen extends ConsumerWidget {
           _StatusFilterBar(
             currentStatus: currentStatus,
             onStatusChanged: (status) {
-              ref.read(submissionsStatusFilterProvider.notifier).state = status;
-              ref.read(submissionsPageProvider.notifier).state = 1;
+              ref.read(submissionsFilterProvider.notifier).setStatus(status);
             },
           ),
           Expanded(
@@ -76,13 +76,13 @@ class SubmissionsScreen extends ConsumerWidget {
                       total: page.total,
                       onPrevious: currentPage > 1
                           ? () => ref
-                              .read(submissionsPageProvider.notifier)
-                              .state = currentPage - 1
+                              .read(submissionsFilterProvider.notifier)
+                              .setPage(currentPage - 1)
                           : null,
                       onNext: currentPage < page.pages
                           ? () => ref
-                              .read(submissionsPageProvider.notifier)
-                              .state = currentPage + 1
+                              .read(submissionsFilterProvider.notifier)
+                              .setPage(currentPage + 1)
                           : null,
                     ),
                   ],
