@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:erp_frontend/core/router/app_router.dart';
 import 'package:erp_frontend/features/tasks/presentation/providers/task_provider.dart';
 import 'package:erp_frontend/features/tasks/domain/models/task_model.dart';
 import 'package:erp_frontend/features/tasks/presentation/widgets/task_comments_sheet.dart';
@@ -30,6 +32,11 @@ class AdminTasksScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Gestion des tâches'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.assignment_turned_in_outlined),
+            tooltip: 'Toutes les soumissions',
+            onPressed: () => context.push(AppRoutes.adminSubmissions),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.invalidate(adminTasksProvider),
@@ -324,6 +331,15 @@ class _AdminTaskCardState extends ConsumerState<_AdminTaskCard> {
                       context, task.id, task.title),
                   icon: const Icon(Icons.chat_bubble_outline, size: 18),
                   label: const Text('Commentaires'),
+                ),
+                TextButton.icon(
+                  onPressed: () => context.push(
+                    AppRoutes.adminTaskSubmissionsPath(task.id),
+                    extra: task.title,
+                  ),
+                  icon: const Icon(Icons.assignment_turned_in_outlined,
+                      size: 18),
+                  label: const Text('Soumissions'),
                 ),
                 const Spacer(),
                 if (task.status == TaskStatus.submitted) ...[

@@ -15,6 +15,8 @@ import 'package:erp_frontend/features/attendance/presentation/screens/admin_sess
 import 'package:erp_frontend/features/profile/presentation/screens/profile_screen.dart';
 import 'package:erp_frontend/features/users/presentation/screens/admin_users_screen.dart';
 import 'package:erp_frontend/features/notifications/presentation/screens/notifications_screen.dart';
+import 'package:erp_frontend/features/tasks/presentation/screens/submissions_screen.dart';
+import 'package:erp_frontend/features/tasks/presentation/screens/task_submissions_screen.dart';
 import 'package:erp_frontend/core/router/shell_screen.dart';
 
 // Route names
@@ -39,6 +41,11 @@ class AppRoutes {
       '/admin/attendance/sessions/:userId/:sessionId';
   static String adminSessionDetailPath(String userId, String sessionId) =>
       '/admin/attendance/sessions/$userId/$sessionId';
+
+  static const adminSubmissions = '/admin/submissions';
+  static const adminTaskSubmissions = '/admin/tasks/:taskId/submissions';
+  static String adminTaskSubmissionsPath(String taskId) =>
+      '/admin/tasks/$taskId/submissions';
 }
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -133,6 +140,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => AdminSessionDetailScreen(
           userId: state.pathParameters['userId']!,
           sessionId: state.pathParameters['sessionId']!,
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutes.adminSubmissions,
+        builder: (context, state) => const SubmissionsScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutes.adminTaskSubmissions,
+        builder: (context, state) => TaskSubmissionsScreen(
+          taskId: state.pathParameters['taskId']!,
+          taskTitle: state.extra as String? ?? '',
         ),
       ),
 

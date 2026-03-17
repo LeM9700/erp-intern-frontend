@@ -28,6 +28,8 @@ class ApiConstants {
   static String taskDelete(String id) => '/tasks/$id';
   static String taskComments(String id) => '/tasks/$id/comments';
   static String taskCommentDelete(String id) => '/tasks/comments/$id';
+  static const String taskSubmissions = '/tasks/submissions';
+  static String taskSubmissionsById(String taskId) => '/tasks/$taskId/submissions';
 
   // Users
   static const String users = '/users';

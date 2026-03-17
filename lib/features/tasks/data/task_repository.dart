@@ -100,6 +100,36 @@ class TaskRepository {
     await _dio.delete(ApiConstants.taskCommentDelete(commentId));
   }
 
+  /// Admin: list all task submissions (paginated, optional status filter)
+  Future<TaskSubmissionPageModel> getSubmissions({
+    int page = 1,
+    int size = 20,
+    String? status,
+  }) async {
+    final response = await _dio.get(
+      ApiConstants.taskSubmissions,
+      queryParameters: {
+        'page': page,
+        'size': size,
+        if (status != null) 'status': status,
+      },
+    );
+    return TaskSubmissionPageModel.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  /// Admin: list submissions for a specific task (paginated)
+  Future<TaskSubmissionPageModel> getTaskSubmissions(
+    String taskId, {
+    int page = 1,
+    int size = 20,
+  }) async {
+    final response = await _dio.get(
+      ApiConstants.taskSubmissionsById(taskId),
+      queryParameters: {'page': page, 'size': size},
+    );
+    return TaskSubmissionPageModel.fromJson(response.data as Map<String, dynamic>);
+  }
+
   /// Intern: submit a task with a note and either a file or a URL
   Future<TaskModel> submitTask(
     String taskId, {

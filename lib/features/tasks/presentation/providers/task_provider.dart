@@ -107,6 +107,31 @@ final taskActionsProvider =
     NotifierProvider<TaskActionsNotifier, AsyncValue<void>>(
         TaskActionsNotifier.new);
 
+// ── Submissions (admin) ──
+final submissionsPageProvider = StateProvider<int>((ref) => 1);
+final submissionsStatusFilterProvider = StateProvider<String?>((ref) => null);
+
+final submissionsProvider =
+    FutureProvider.autoDispose<TaskSubmissionPageModel>((ref) async {
+  final page = ref.watch(submissionsPageProvider);
+  final status = ref.watch(submissionsStatusFilterProvider);
+  return ref
+      .read(taskRepositoryProvider)
+      .getSubmissions(page: page, size: 20, status: status);
+});
+
+final taskSubmissionsPageProvider =
+    StateProvider.autoDispose.family<int, String>((ref, _) => 1);
+
+final taskSubmissionsProvider =
+    FutureProvider.autoDispose.family<TaskSubmissionPageModel, String>(
+        (ref, taskId) async {
+  final page = ref.watch(taskSubmissionsPageProvider(taskId));
+  return ref
+      .read(taskRepositoryProvider)
+      .getTaskSubmissions(taskId, page: page);
+});
+
 // ── Task comments ──
 final taskCommentsProvider =
     FutureProvider.autoDispose.family<List<TaskCommentModel>, String>((ref, taskId) async {
