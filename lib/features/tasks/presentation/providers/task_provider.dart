@@ -108,20 +108,48 @@ final taskActionsProvider =
         TaskActionsNotifier.new);
 
 // ── Submissions (admin) ──
-final submissionsPageProvider = StateProvider<int>((ref) => 1);
-final submissionsStatusFilterProvider = StateProvider<String?>((ref) => null);
+
+class SubmissionsFilter {
+  final int page;
+  final String? status;
+
+  const SubmissionsFilter({this.page = 1, this.status});
+}
+
+class SubmissionsFilterNotifier extends Notifier<SubmissionsFilter> {
+  @override
+  SubmissionsFilter build() => const SubmissionsFilter();
+
+  void setPage(int page) =>
+      state = SubmissionsFilter(page: page, status: state.status);
+
+  void setStatus(String? status) =>
+      state = SubmissionsFilter(page: 1, status: status);
+}
+
+final submissionsFilterProvider =
+    NotifierProvider<SubmissionsFilterNotifier, SubmissionsFilter>(
+        SubmissionsFilterNotifier.new);
 
 final submissionsProvider =
     FutureProvider.autoDispose<TaskSubmissionPageModel>((ref) async {
-  final page = ref.watch(submissionsPageProvider);
-  final status = ref.watch(submissionsStatusFilterProvider);
+  final filter = ref.watch(submissionsFilterProvider);
   return ref
       .read(taskRepositoryProvider)
-      .getSubmissions(page: page, size: 20, status: status);
+      .getSubmissions(page: filter.page, size: 20, status: filter.status);
 });
 
-final taskSubmissionsPageProvider =
-    StateProvider.autoDispose.family<int, String>((ref, _) => 1);
+class TaskSubmissionsPageNotifier
+    extends AutoDisposeFamilyNotifier<int, String> {
+  @override
+  int build(String arg) => 1;
+
+  void setPage(int page) => state = page;
+}
+
+final taskSubmissionsPageProvider = NotifierProvider.autoDispose
+    .family<TaskSubmissionsPageNotifier, int, String>(
+        TaskSubmissionsPageNotifier.new);
 
 final taskSubmissionsProvider =
     FutureProvider.autoDispose.family<TaskSubmissionPageModel, String>(
