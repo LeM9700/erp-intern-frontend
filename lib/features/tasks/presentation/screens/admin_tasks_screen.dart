@@ -8,12 +8,40 @@ import 'package:erp_frontend/features/tasks/presentation/widgets/task_comments_s
 import 'package:erp_frontend/features/users/presentation/providers/user_provider.dart';
 import 'package:erp_frontend/features/auth/domain/models/user_model.dart';
 
-class AdminTasksScreen extends ConsumerWidget {
-  const AdminTasksScreen({super.key});
+class AdminTasksScreen extends ConsumerStatefulWidget {
+  const AdminTasksScreen({super.key, this.initialStatus});
+
+  final String? initialStatus;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AdminTasksScreen> createState() => _AdminTasksScreenState();
+}
+
+class _AdminTasksScreenState extends ConsumerState<AdminTasksScreen> {
+  static const _chips = [
+    (label: 'Tous', value: null),
+    (label: 'En attente', value: 'PENDING'),
+    (label: 'En cours', value: 'IN_PROGRESS'),
+    (label: 'Soumises', value: 'SUBMITTED'),
+    (label: 'Approuvées', value: 'APPROVED'),
+    (label: 'Rejetées', value: 'REJECTED'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialStatus != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(adminTaskStatusFilterProvider.notifier).state =
+            widget.initialStatus;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final tasksAsync = ref.watch(adminTasksProvider);
+    final currentFilter = ref.watch(adminTaskStatusFilterProvider);
     final theme = Theme.of(context);
 
     ref.listen(taskActionsProvider, (_, next) {
@@ -44,54 +72,80 @@ class AdminTasksScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCreateTaskDialog(context, ref),
+        onPressed: () => _showCreateTaskDialog(context),
         icon: const Icon(Icons.add),
         label: const Text('Nouvelle tâche'),
       ),
-      body: RefreshIndicator(
-        onRefresh: () async => ref.invalidate(adminTasksProvider),
-        child: tasksAsync.when(
-          data: (tasks) {
-            if (tasks.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.task_outlined,
-                        size: 64,
-                        color: theme.colorScheme.onSurfaceVariant),
-                    const SizedBox(height: 16),
-                    Text('Aucune tâche créée',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant)),
-                    const SizedBox(height: 8),
-                    FilledButton.icon(
-                      onPressed: () => _showCreateTaskDialog(context, ref),
-                      icon: const Icon(Icons.add),
-                      label: const Text('Créer une tâche'),
-                    ),
-                  ],
-                ),
-              );
-            }
+      body: Column(
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              children: _chips.map((chip) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    label: Text(chip.value == null ? 'Tous' : chip.label),
+                    selected: currentFilter == chip.value,
+                    onSelected: (_) {
+                      ref
+                          .read(adminTaskStatusFilterProvider.notifier)
+                          .state = chip.value;
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async => ref.invalidate(adminTasksProvider),
+              child: tasksAsync.when(
+                data: (tasks) {
+                  if (tasks.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.task_outlined,
+                              size: 64,
+                              color: theme.colorScheme.onSurfaceVariant),
+                          const SizedBox(height: 16),
+                          Text('Aucune tâche créée',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant)),
+                          const SizedBox(height: 8),
+                          FilledButton.icon(
+                            onPressed: () => _showCreateTaskDialog(context),
+                            icon: const Icon(Icons.add),
+                            label: const Text('Créer une tâche'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
-                final task = tasks[index];
-                return _AdminTaskCard(task: task);
-              },
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Erreur: $e')),
-        ),
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      final task = tasks[index];
+                      return _AdminTaskCard(task: task);
+                    },
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(child: Text('Erreur: $e')),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  void _showCreateTaskDialog(BuildContext context, WidgetRef ref) {
+  void _showCreateTaskDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (ctx) => _CreateTaskDialog(

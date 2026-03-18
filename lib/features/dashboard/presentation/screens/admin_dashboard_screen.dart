@@ -67,22 +67,26 @@ class AdminDashboardScreen extends ConsumerWidget {
                       title: 'En attente',
                       value: '${kpis.tasksPending}',
                       icon: Icons.hourglass_empty,
-                      color: Colors.orange),
+                      color: Colors.orange,
+                      onTap: () => context.push(AppRoutes.adminTasks, extra: 'PENDING')),
                   _KpiCard(
                       title: 'En cours',
                       value: '${kpis.tasksInProgress}',
                       icon: Icons.play_circle_outline,
-                      color: Colors.blue),
+                      color: Colors.blue,
+                      onTap: () => context.push(AppRoutes.adminTasks, extra: 'IN_PROGRESS')),
                   _KpiCard(
                       title: 'Soumises',
                       value: '${kpis.tasksSubmitted}',
                       icon: Icons.upload_file,
-                      color: Colors.purple),
+                      color: Colors.purple,
+                      onTap: () => context.push(AppRoutes.adminTasks, extra: 'SUBMITTED')),
                   _KpiCard(
                       title: 'Approuvées',
                       value: '${kpis.tasksApproved}',
                       icon: Icons.check_circle_outline,
-                      color: Colors.green),
+                      color: Colors.green,
+                      onTap: () => context.push(AppRoutes.adminTasks, extra: 'APPROVED')),
                 ],
               ),
 
@@ -162,37 +166,43 @@ class _KpiCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color color;
+  final VoidCallback? onTap;
 
   const _KpiCard({
     required this.title,
     required this.value,
     required this.icon,
     required this.color,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Icon(icon, color: color, size: 24),
-                Text(value,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold, color: color)),
-              ],
-            ),
-            Text(title,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-          ],
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(icon, color: color, size: 24),
+                  Text(value,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold, color: color)),
+                ],
+              ),
+              Text(title,
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            ],
+          ),
         ),
       ),
     );

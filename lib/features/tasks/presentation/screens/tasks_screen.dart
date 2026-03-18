@@ -5,12 +5,40 @@ import 'package:erp_frontend/features/tasks/presentation/providers/task_provider
 import 'package:erp_frontend/features/tasks/domain/models/task_model.dart';
 import 'package:erp_frontend/features/tasks/presentation/widgets/task_comments_sheet.dart';
 
-class TasksScreen extends ConsumerWidget {
-  const TasksScreen({super.key});
+class TasksScreen extends ConsumerStatefulWidget {
+  const TasksScreen({super.key, this.initialStatus});
+
+  final String? initialStatus;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TasksScreen> createState() => _TasksScreenState();
+}
+
+class _TasksScreenState extends ConsumerState<TasksScreen> {
+  static const _chips = [
+    (label: 'Tous', value: null),
+    (label: 'En attente', value: 'PENDING'),
+    (label: 'En cours', value: 'IN_PROGRESS'),
+    (label: 'Soumises', value: 'SUBMITTED'),
+    (label: 'Approuvées', value: 'APPROVED'),
+    (label: 'Rejetées', value: 'REJECTED'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialStatus != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(internTaskStatusFilterProvider.notifier).state =
+            widget.initialStatus;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final tasksAsync = ref.watch(internTasksProvider);
+    final currentFilter = ref.watch(internTaskStatusFilterProvider);
     final theme = Theme.of(context);
 
     ref.listen(taskActionsProvider, (_, next) {
@@ -35,39 +63,65 @@ class TasksScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async => ref.invalidate(internTasksProvider),
-        child: tasksAsync.when(
-          data: (tasks) {
-            if (tasks.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.task_outlined,
-                        size: 64,
-                        color: theme.colorScheme.onSurfaceVariant),
-                    const SizedBox(height: 16),
-                    Text('Aucune tâche assignée',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant)),
-                  ],
-                ),
-              );
-            }
+      body: Column(
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              children: _chips.map((chip) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    label: Text(chip.value == null ? 'Tous' : chip.label),
+                    selected: currentFilter == chip.value,
+                    onSelected: (_) {
+                      ref
+                          .read(internTaskStatusFilterProvider.notifier)
+                          .state = chip.value;
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async => ref.invalidate(internTasksProvider),
+              child: tasksAsync.when(
+                data: (tasks) {
+                  if (tasks.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.task_outlined,
+                              size: 64,
+                              color: theme.colorScheme.onSurfaceVariant),
+                          const SizedBox(height: 16),
+                          Text('Aucune tâche assignée',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant)),
+                        ],
+                      ),
+                    );
+                  }
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
-                final task = tasks[index];
-                return _InternTaskCard(task: task);
-              },
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Erreur: $e')),
-        ),
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      final task = tasks[index];
+                      return _InternTaskCard(task: task);
+                    },
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(child: Text('Erreur: $e')),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

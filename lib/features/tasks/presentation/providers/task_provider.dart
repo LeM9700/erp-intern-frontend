@@ -3,18 +3,22 @@ import 'package:image_picker/image_picker.dart';
 import 'package:erp_frontend/features/tasks/data/task_repository.dart';
 import 'package:erp_frontend/features/tasks/domain/models/task_model.dart';
 
+// ── Task status filters ──
+final adminTaskStatusFilterProvider = StateProvider<String?>((ref) => null);
+final internTaskStatusFilterProvider = StateProvider<String?>((ref) => null);
+
 // ── Admin tasks ──
 final adminTasksProvider =
     FutureProvider.autoDispose<List<TaskModel>>((ref) async {
-  final repo = ref.read(taskRepositoryProvider);
-  return repo.getAdminTasks();
+  final status = ref.watch(adminTaskStatusFilterProvider);
+  return ref.read(taskRepositoryProvider).getAdminTasks(status: status);
 });
 
 // ── Intern tasks ──
 final internTasksProvider =
     FutureProvider.autoDispose<List<TaskModel>>((ref) async {
-  final repo = ref.read(taskRepositoryProvider);
-  return repo.getMyTasks();
+  final status = ref.watch(internTaskStatusFilterProvider);
+  return ref.read(taskRepositoryProvider).getMyTasks(status: status);
 });
 
 // ── Task actions notifier ──
