@@ -32,8 +32,7 @@ class _AdminTasksScreenState extends ConsumerState<AdminTasksScreen> {
     super.initState();
     if (widget.initialStatus != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(adminTaskStatusFilterProvider.notifier).state =
-            widget.initialStatus;
+        ref.read(adminTaskStatusFilterProvider.notifier).set(widget.initialStatus);
       });
     }
   }
@@ -91,7 +90,7 @@ class _AdminTasksScreenState extends ConsumerState<AdminTasksScreen> {
                     onSelected: (_) {
                       ref
                           .read(adminTaskStatusFilterProvider.notifier)
-                          .state = chip.value;
+                          .set(chip.value);
                     },
                   ),
                 );

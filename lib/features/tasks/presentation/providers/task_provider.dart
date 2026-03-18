@@ -4,8 +4,27 @@ import 'package:erp_frontend/features/tasks/data/task_repository.dart';
 import 'package:erp_frontend/features/tasks/domain/models/task_model.dart';
 
 // ── Task status filters ──
-final adminTaskStatusFilterProvider = StateProvider<String?>((ref) => null);
-final internTaskStatusFilterProvider = StateProvider<String?>((ref) => null);
+class AdminTaskStatusFilterNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void set(String? status) => state = status;
+}
+
+final adminTaskStatusFilterProvider =
+    NotifierProvider<AdminTaskStatusFilterNotifier, String?>(
+        AdminTaskStatusFilterNotifier.new);
+
+class InternTaskStatusFilterNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void set(String? status) => state = status;
+}
+
+final internTaskStatusFilterProvider =
+    NotifierProvider<InternTaskStatusFilterNotifier, String?>(
+        InternTaskStatusFilterNotifier.new);
 
 // ── Admin tasks ──
 final adminTasksProvider =
