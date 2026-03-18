@@ -96,8 +96,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: AppRoutes.adminTasks,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: AdminTasksScreen(),
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: AdminTasksScreen(initialStatus: state.extra as String?),
             ),
           ),
           GoRoute(
@@ -171,8 +171,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: AppRoutes.internTasks,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: TasksScreen(),
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: TasksScreen(initialStatus: state.extra as String?),
             ),
           ),
           GoRoute(

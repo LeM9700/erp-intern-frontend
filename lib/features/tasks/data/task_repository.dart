@@ -15,8 +15,11 @@ class TaskRepository {
   TaskRepository(this._dio);
 
   /// Admin: list all tasks
-  Future<List<TaskModel>> getAdminTasks() async {
-    final response = await _dio.get(ApiConstants.tasksAdmin);
+  Future<List<TaskModel>> getAdminTasks({String? status}) async {
+    final response = await _dio.get(
+      ApiConstants.tasksAdmin,
+      queryParameters: status != null ? {'status': status} : null,
+    );
     final data = response.data;
     final list = data is List ? data : (data['items'] as List<dynamic>);
     return list
@@ -25,8 +28,11 @@ class TaskRepository {
   }
 
   /// Intern: list my tasks
-  Future<List<TaskModel>> getMyTasks() async {
-    final response = await _dio.get(ApiConstants.tasksMe);
+  Future<List<TaskModel>> getMyTasks({String? status}) async {
+    final response = await _dio.get(
+      ApiConstants.tasksMe,
+      queryParameters: status != null ? {'status': status} : null,
+    );
     final data = response.data;
     final list = data is List ? data : (data['items'] as List<dynamic>);
     return list
