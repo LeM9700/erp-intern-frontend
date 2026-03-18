@@ -29,8 +29,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
     super.initState();
     if (widget.initialStatus != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(internTaskStatusFilterProvider.notifier).state =
-            widget.initialStatus;
+        ref.read(internTaskStatusFilterProvider.notifier).set(widget.initialStatus);
       });
     }
   }
@@ -78,7 +77,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                     onSelected: (_) {
                       ref
                           .read(internTaskStatusFilterProvider.notifier)
-                          .state = chip.value;
+                          .set(chip.value);
                     },
                   ),
                 );
